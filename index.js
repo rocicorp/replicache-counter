@@ -16,9 +16,8 @@ const options = {
   host: process.env.HOST || '0.0.0.0',
 };
 
-const r = new ReplicacheExpressServer(options);
-/** CORS setting with OPTIONS pre-flight handling */
-r.app.use(function(req, res, next){
+const e = express();
+e.use(function(req, res, next){
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, accept, access-control-allow-origin');
@@ -26,12 +25,16 @@ r.app.use(function(req, res, next){
   else next();
 });
 
-r.app.use(express.static('static'));
-r.app.use('*', (_req, res) => {
+e.use(new ReplicacheExpressServer(options).app)
+/** CORS setting with OPTIONS pre-flight handling */
+
+e.use(express.static('static'));
+e.use('*', (_req, res) => {
   const index = path.join('pages', 'index.html');
   const html = fs.readFileSync(index, 'utf8');
   res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
 });
-r.start(async () => {
-  console.log(`Replicache is listening on ${options.host}:${options.port}`);
+
+e.listen(options.port, options.host, () => {
+  console.log(`Listening at http://${options.host}:${options.port}`);
 });
