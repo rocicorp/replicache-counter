@@ -1,6 +1,6 @@
 {
-  "name": "node-starter",
-  "version": "0.0.0",
+  "name": "replicache-counter",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "node --experimental-specifier-resolution=node index.js"

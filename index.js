@@ -17,22 +17,18 @@ const options = {
 };
 
 const e = express();
+/** CORS setting with OPTIONS pre-flight handling */
 e.use(function(req, res, next){
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, accept, access-control-allow-origin');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, accept, access-control-allow-origin, x-replicache-requestid');
   if ('OPTIONS' == req.method) res.send(200);
   else next();
 });
 
 e.use(new ReplicacheExpressServer(options).app)
-/** CORS setting with OPTIONS pre-flight handling */
-
-e.use(express.static('static'));
-e.use('*', (_req, res) => {
-  const index = path.join('pages', 'index.html');
-  const html = fs.readFileSync(index, 'utf8');
-  res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+e.get('/', (_req, res) => {
+  res.status(200).send('OK');
 });
 
 e.listen(options.port, options.host, () => {
